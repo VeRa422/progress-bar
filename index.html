@@ -257,6 +257,7 @@
 
                 cards.forEach(card => {
                     const nameText = card.querySelector('.name').textContent.toLowerCase();
+                    
                     if (nameText.includes(filter)) {
                         card.style.display = 'flex';
                     } else {
@@ -314,10 +315,8 @@
                     const name = parts[0].trim();
                     if (!name) continue; 
 
-                    // ТЕПЕРЬ СОХРАНЯЕМ СТАТУС ПО КАЖДОМУ УРОКУ ОТДЕЛЬНО
                     let lessonProgress = [];
                     for (let j = 1; j <= TOTAL_LESSONS; j++) {
-                        // Если в ячейке урока (начиная со 2-й колонки) что-то есть, ставим true
                         lessonProgress.push(parts[j] && parts[j].trim() !== '' ? true : false);
                     }
 
@@ -332,11 +331,15 @@
             });
         }
 
-        function getInitials(name) {
-            const words = name.split(' ').filter(w => w.length > 0);
-            if (words.length === 0) return '👤';
-            if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
-            return (words[0][0] + words[1][0]).toUpperCase();
+        // Функция подбора магического эмоджи на основе имени
+        function getAvatarIcon(name) {
+            const THEME_ICONS = ['📚', '✨', '🔮', '🏰', '🧚', '🧙', '🌟', '📜', '🕯️', '🗝️', '🦄', '🐉', '🧭', '🗺️'];
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % THEME_ICONS.length;
+            return THEME_ICONS[index];
         }
 
         function getColor(name) {
@@ -348,23 +351,23 @@
             return `hsl(${hue}, 70%, 50%)`;
         }
 
-        // Новая функция отрисовки карточки, принимающая объект ученика
         function createStudentCard(student, container) {
             const doneCount = student.progress.filter(p => p === true).length;
             
-            // ГЕНЕРИРУЕМ СЛОТЫ ПРИВЯЗАННЫЕ К НОМЕРУ УРОКА
             let slotsHtml = '';
             for (let i = 0; i < TOTAL_LESSONS; i++) {
                 if (student.progress[i]) {
                     slotsHtml += `<div class="slot filled">✅</div>`; 
                 } else {
-                    slotsHtml += `<div class="slot">${i + 1}</div>`; // Показываем номер урока, если не сдан
+                    slotsHtml += `<div class="slot">${i + 1}</div>`; 
                 }
             }
 
-            const initials = getInitials(student.name);
+            // Используем новую функцию генерации магической иконки вместо инициалов
+            const avatarIcon = getAvatarIcon(student.name);
             const bgColor = getColor(student.name);
-            const avatarHtml = `<div class="avatar" style="background-color: ${bgColor};">${initials}</div>`;
+            // Добавлен font-size: 1.8em; чтобы эмоджи выглядели крупнее и красивее
+            const avatarHtml = `<div class="avatar" style="background-color: ${bgColor}; font-size: 1.8em;">${avatarIcon}</div>`;
 
             const card = document.createElement('div');
             card.className = 'card';
