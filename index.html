@@ -3,32 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Прогресс учеников 🚀</title>
+    <title>Прогресс учеников | Архитектор учебных миров</title>
+    <link href="https://fonts.googleapis.com/css2?family=Philosopher:wght@700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
-        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
-        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: #ffffff; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 6px solid #2ecc71; transition: transform 0.2s ease; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
-        .avatar { width: 60px; height: 60px; border-radius: 10px; flex-shrink: 0; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: bold; font-size: 1.4em; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
-        .info { flex-grow: 1; }
-        .name { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; }
-        .tasks { font-size: 0.9em; color: #7f8c8d; margin: 0; }
-        .checkmarks { font-size: 1.2em; text-align: right; margin-left: 10px; flex-shrink: 0; letter-spacing: 2px; }
-        .loading { text-align: center; color: #7f8c8d; font-size: 1.2em; margin-top: 50px; }
+        /* Космический фон */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #0b0c1b 0%, #3a154d 50%, #1a3b68 100%);
+            background-attachment: fixed;
+            color: #ffffff; 
+            margin: 0; 
+            padding: 30px 20px; 
+            min-height: 100vh;
+        }
+
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto; 
+        }
+
+        /* Золотой заголовок */
+        h1 { 
+            text-align: center; 
+            font-family: 'Philosopher', sans-serif;
+            font-size: 3.5em;
+            margin-bottom: 0px;
+            margin-top: 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            /* Делаем текст золотым градиентом */
+            background: linear-gradient(to bottom, #ffe896 0%, #d4af37 50%, #aa7700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.6));
+        }
+
+        .subtitle {
+            text-align: center;
+            font-family: 'Philosopher', sans-serif;
+            font-size: 1.5em;
+            color: #d1c4e9;
+            margin-top: 5px;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .cards-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 20px; 
+        }
+
+        /* Полупрозрачные стеклянные карточки */
+        .card { 
+            background: rgba(255, 255, 255, 0.08); 
+            backdrop-filter: blur(12px); /* Размытие фона под карточкой */
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 15px; 
+            padding: 15px; 
+            display: flex; 
+            align-items: center; 
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
+            border-left: 6px solid #d4af37; /* Золотая рамочка */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+
+        .card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5); 
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .avatar { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 10px; 
+            flex-shrink: 0; 
+            margin-right: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #ffffff; 
+            font-weight: bold; 
+            font-size: 1.4em; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4); 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .info { 
+            flex-grow: 1; 
+        }
+
+        .name { 
+            font-weight: bold; 
+            font-size: 1.1em; 
+            margin: 0 0 5px 0; 
+            color: #ffffff;
+        }
+
+        .tasks { 
+            font-size: 0.9em; 
+            color: #b3a0d1; /* Светло-фиолетовый текст для контраста */
+            margin: 0; 
+        }
+
+        .checkmarks { 
+            font-size: 1.2em; 
+            text-align: right; 
+            margin-left: 10px; 
+            flex-shrink: 0; 
+            letter-spacing: 2px; 
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.4));
+        }
+
+        .loading { 
+            text-align: center; 
+            color: #d1c4e9; 
+            font-size: 1.2em; 
+            margin-top: 50px; 
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Прогресс учеников 🚀</h1>
-        <div id="loading" class="loading">Загружаем свежие данные... ⏳</div>
+        <h1>Архитектор</h1>
+        <div class="subtitle">учебных миров ✨</div>
+        <div id="loading" class="loading">Загружаем данные из портала... ⏳</div>
         <div id="cardsContainer" class="cards-grid"></div>
     </div>
 
     <script>
-        // Твоя рабочая ссылка из Гугл Таблиц
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRN6lR23IvtyaNCPyuFnLdOo3yBqxK25GmB7R6cFeiyzfypkkMkifjVsw5-3wTp2fxLoKDIvTSMCXPP/pub?gid=0&single=true&output=csv';
 
         window.onload = function() {
@@ -39,7 +147,7 @@
                     processCSV(csvText);
                 })
                 .catch(error => {
-                    document.getElementById('loading').innerHTML = '❌ Ошибка загрузки данных. Проверьте ссылку.';
+                    document.getElementById('loading').innerHTML = '❌ Ошибка связи с порталом. Проверьте ссылку.';
                     console.error('Ошибка:', error);
                 });
         };
@@ -51,7 +159,6 @@
             const lines = csvText.split(/\r?\n/);
             if (lines.length < 2) return; 
 
-            // Создаем пустой массив для хранения данных учеников
             let students = [];
 
             for (let i = 1; i < lines.length; i++) {
@@ -70,15 +177,12 @@
                         }
                     }
 
-                    // Добавляем ученика в массив вместо моментальной отрисовки
                     students.push({ name: name, tasksCount: tasksCount });
                 }
             }
 
-            // Сортируем массив по алфавиту (localeCompare учитывает русский и английский язык)
             students.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 
-            // Проходимся по уже отсортированному списку и рисуем карточки
             students.forEach(student => {
                 createCard(student.name, student.tasksCount, container);
             });
@@ -97,7 +201,8 @@
                 hash = name.charCodeAt(i) + ((hash << 5) - hash);
             }
             const hue = Math.abs(hash % 360);
-            return `hsl(${hue}, 65%, 60%)`;
+            // Сделал цвета аватарок чуть более насыщенными для темного фона
+            return `hsl(${hue}, 70%, 50%)`;
         }
 
         function createCard(name, tasksCount, container) {
