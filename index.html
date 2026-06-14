@@ -146,25 +146,25 @@
         .name { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; color: #ffffff;}
         .tasks-text { font-size: 0.85em; color: #b3a0d1; margin: 0; }
 
-        /* --- Блок с квадратиками (слотами) --- */
+/* --- Обновленный блок с квадратиками --- */
         .slots-container {
             display: flex;
-            gap: 6px;
-            flex-wrap: wrap; /* Если не влезет, перенесется на новую строку */
+            gap: 4px; /* Уменьшили расстояние между квадратиками */
+            flex-wrap: wrap; 
             width: 100%;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .slot {
-            width: 26px;
-            height: 26px;
+            width: 20px; /* Уменьшили ширину */
+            height: 20px; /* Уменьшили высоту */
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
-            background: rgba(0, 0, 0, 0.2); /* Темный пустой фон */
+            border-radius: 4px; /* Чуть острее уголки */
+            background: rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9em;
+            font-size: 0.7em; /* Уменьшили размер галочки */
             transition: all 0.3s ease;
         }
 
