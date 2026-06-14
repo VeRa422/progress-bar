@@ -77,10 +77,46 @@
             font-size: 1.5em;
             color: #d1c4e9;
             margin-top: 5px;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
             letter-spacing: 2px;
             text-transform: uppercase;
             text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* --- НОВЫЙ БЛОК: Поисковая строка --- */
+        .search-container {
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Эффект при наведении и фокусе на поиск */
+        .search-input:focus, .search-input:hover {
+            border-color: #d4af37;
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+        }
+
+        /* Цвет подсказки (placeholder) */
+        .search-input::placeholder {
+            color: #b3a0d1;
+            opacity: 0.7;
         }
 
         .loading { 
@@ -97,7 +133,7 @@
             gap: 25px; 
         }
 
-        /* --- Обновленный дизайн карточки --- */
+        /* --- Дизайн карточки --- */
         .card { 
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(12px); 
@@ -106,7 +142,7 @@
             border-radius: 15px; 
             padding: 20px; 
             display: flex; 
-            flex-direction: column; /* Элементы идут сверху вниз */
+            flex-direction: column; 
             box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
             border-left: 6px solid #d4af37; 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
@@ -118,7 +154,6 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
-        /* Шапка карточки (Аватар + Имя) */
         .card-header {
             display: flex;
             align-items: center;
@@ -146,21 +181,21 @@
         .name { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; color: #ffffff;}
         .tasks-text { font-size: 0.85em; color: #b3a0d1; margin: 0; }
 
-/* --- Обновленный блок с квадратиками --- */
+        /* --- Квадратики (слоты) --- */
         .slots-container {
             display: flex;
-            gap: 4px; /* Уменьшили расстояние между квадратиками */
+            gap: 4px;
             flex-wrap: wrap; 
             width: 100%;
             margin-top: 10px;
         }
 
-.slot {
+        .slot {
             width: 20px;
             height: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1); /* Сделали границу еще тоньше и прозрачнее */
+            border: 1px solid rgba(255, 255, 255, 0.1); 
             border-radius: 6px;
-            background: rgba(255, 255, 255, 0.05); /* Легкий эффект матового стекла */
+            background: rgba(255, 255, 255, 0.05); 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -168,13 +203,11 @@
             transition: all 0.3s ease;
         }
 
-        /* Стиль для заполненного слота */
         .slot.filled {
-            background: rgba(46, 204, 113, 0.15); /* Мягкий зеленый */
+            background: rgba(46, 204, 113, 0.15); 
             border-color: rgba(46, 204, 113, 0.5);
             box-shadow: 0 0 5px rgba(46, 204, 113, 0.2);
         }
-
     </style>
 </head>
 <body>
@@ -182,17 +215,22 @@
     <div class="container">
         <h1>Архитектор</h1>
         <div class="subtitle">учебных миров ✨</div>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Введите имя или фамилию для поиска...">
+        </div>
+
         <div id="loading" class="loading">Загружаем данные из портала... ⏳</div>
         <div id="cardsContainer" class="cards-grid"></div>
     </div>
 
     <script>
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRN6lR23IvtyaNCPyuFnLdOo3yBqxK25GmB7R6cFeiyzfypkkMkifjVsw5-3wTp2fxLoKDIvTSMCXPP/pub?gid=0&single=true&output=csv';
-        // Количество уроков на курсе (14 спикеров = 14 заданий)
         const TOTAL_LESSONS = 14;
 
         window.onload = function() {
             createBackgroundStars();
+            setupSearch(); // Подключаем живой поиск
 
             const noCacheUrl = GOOGLE_SHEET_URL + '&_nocache=' + new Date().getTime();
 
@@ -207,6 +245,28 @@
                     console.error('Ошибка:', error);
                 });
         };
+
+        // НАСТРОЙКА ЖИВОГО ПОИСКА
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', function() {
+                const filter = searchInput.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.card');
+
+                cards.forEach(card => {
+                    // Находим имя внутри текущей карточки
+                    const nameText = card.querySelector('.name').textContent.toLowerCase();
+                    
+                    // Если имя содержит введенный текст, показываем карточку, если нет — скрываем
+                    if (nameText.includes(filter)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
 
         function createBackgroundStars() {
             const numStars = 70;
@@ -249,8 +309,6 @@
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue; 
 
-                // Разделяем строку на ячейки. Внимание: если в ФИО или отметках будут запятые, 
-                // встроенный экспорт Google оборачивает их в кавычки, но для простых "принято" это работает идеально.
                 const parts = lines[i].split(delimiter);
                 
                 if (parts.length > 0) {
@@ -292,16 +350,14 @@
         }
 
         function createCard(name, tasksCount, container) {
-            // Ограничиваем количество выполненных заданий числом 14, чтобы верстка не сломалась
             const validTasksCount = Math.min(tasksCount, TOTAL_LESSONS);
 
-            // Генерируем 14 квадратиков-слотов
             let slotsHtml = '';
             for (let i = 0; i < TOTAL_LESSONS; i++) {
                 if (i < validTasksCount) {
-                    slotsHtml += `<div class="slot filled">✅</div>`; // Заполненный
+                    slotsHtml += `<div class="slot filled">✅</div>`; 
                 } else {
-                    slotsHtml += `<div class="slot"></div>`; // Пустой
+                    slotsHtml += `<div class="slot"></div>`; 
                 }
             }
 
