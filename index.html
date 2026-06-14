@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Прогресс учеников 🚀</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 30px; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .card { background: #ffffff; border-radius: 12px; padding: 15px; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border-left: 6px solid #2ecc71; transition: transform 0.2s ease; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+        .avatar { width: 60px; height: 60px; border-radius: 10px; flex-shrink: 0; margin-right: 15px; display: flex; align-items: center; justify-content: center; color: #ffffff; font-weight: bold; font-size: 1.4em; text-shadow: 1px 1px 2px rgba(0,0,0,0.2); }
+        .info { flex-grow: 1; }
+        .name { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; }
+        .tasks { font-size: 0.9em; color: #7f8c8d; margin: 0; }
+        .checkmarks { font-size: 1.2em; text-align: right; margin-left: 10px; flex-shrink: 0; letter-spacing: 2px; }
+        .loading { text-align: center; color: #7f8c8d; font-size: 1.2em; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Прогресс учеников 🚀</h1>
+        <div id="loading" class="loading">Загружаем свежие данные... ⏳</div>
+        <div id="cardsContainer" class="cards-grid"></div>
+    </div>
+
+    <script>
+        // Твоя рабочая ссылка из Гугл Таблиц
+        const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRN6lR23IvtyaNCPyuFnLdOo3yBqxK25GmB7R6cFeiyzfypkkMkifjVsw5-3wTp2fxLoKDIvTSMCXPP/pub?gid=0&single=true&output=csv';
+
+        window.onload = function() {
+            fetch(GOOGLE_SHEET_URL)
+                .then(response => response.text())
+                .then(csvText => {
+                    document.getElementById('loading').style.display = 'none'; 
+                    processCSV(csvText);
+                })
+                .catch(error => {
+                    document.getElementById('loading').innerHTML = '❌ Ошибка загрузки данных. Проверьте ссылку.';
+                    console.error('Ошибка:', error);
+                });
+        };
+
+        function processCSV(csvText) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = ''; 
+
+            const lines = csvText.split(/\r?\n/);
+            if (lines.length < 2) return; 
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue; 
+
+                const parts = lines[i].split(',');
+                
+                if (parts.length > 0) {
+                    const name = parts[0].trim();
+                    if (!name) continue; 
+
+                    let tasksCount = 0;
+                    for (let j = 1; j < parts.length; j++) {
+                        if (parts[j].trim() !== '') {
+                            tasksCount++;
+                        }
+                    }
+
+                    createCard(name, tasksCount, container);
+                }
+            }
+        }
+
+        function getInitials(name) {
+            const words = name.split(' ').filter(w => w.length > 0);
+            if (words.length === 0) return '👤';
+            if (words.length === 1) return words[0].substring(0, 2).toUpperCase();
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+
+        function getColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const hue = Math.abs(hash % 360);
+            return `hsl(${hue}, 65%, 60%)`;
+        }
+
+        function createCard(name, tasksCount, container) {
+            // Теперь количество галочек равно количеству заданий
+            const checkmarksCount = tasksCount;
+            const checkmarksHtml = '✅'.repeat(checkmarksCount);
+            
+            const initials = getInitials(name);
+            const bgColor = getColor(name);
+            const avatarHtml = `<div class="avatar" style="background-color: ${bgColor};">${initials}</div>`;
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                ${avatarHtml}
+                <div class="info">
+                    <p class="name">${name}</p>
+                    <p class="tasks">${tasksCount} выполненных заданий</p>
+                </div>
+                <div class="checkmarks">${checkmarksHtml}</div>
+            `;
+            container.appendChild(card);
+        }
+    </script>
+</body>
+</html>
