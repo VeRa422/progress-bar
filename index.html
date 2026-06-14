@@ -51,6 +51,9 @@
             const lines = csvText.split(/\r?\n/);
             if (lines.length < 2) return; 
 
+            // Создаем пустой массив для хранения данных учеников
+            let students = [];
+
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue; 
 
@@ -67,9 +70,18 @@
                         }
                     }
 
-                    createCard(name, tasksCount, container);
+                    // Добавляем ученика в массив вместо моментальной отрисовки
+                    students.push({ name: name, tasksCount: tasksCount });
                 }
             }
+
+            // Сортируем массив по алфавиту (localeCompare учитывает русский и английский язык)
+            students.sort((a, b) => a.name.localeCompare(b.name, 'ru'));
+
+            // Проходимся по уже отсортированному списку и рисуем карточки
+            students.forEach(student => {
+                createCard(student.name, student.tasksCount, container);
+            });
         }
 
         function getInitials(name) {
@@ -89,7 +101,6 @@
         }
 
         function createCard(name, tasksCount, container) {
-            // Теперь количество галочек равно количеству заданий
             const checkmarksCount = tasksCount;
             const checkmarksHtml = '✅'.repeat(checkmarksCount);
             
