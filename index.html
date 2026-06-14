@@ -14,15 +14,15 @@
             margin: 0; 
             padding: 30px 20px; 
             min-height: 100vh;
-            overflow-x: hidden; /* Чтобы звезды не создавали прокрутку вбок */
+            overflow-x: hidden;
         }
 
-        /* --- НОВЫЙ БЛОК: Стили для звезд и шлейфа --- */
+        /* --- Звездное небо и пыльца --- */
         .star {
             position: fixed;
             background-color: #ffffff;
             border-radius: 50%;
-            z-index: 0; /* Оставляем позади контента */
+            z-index: 0; 
             pointer-events: none;
             animation: twinkle infinite ease-in-out;
         }
@@ -36,9 +36,9 @@
             position: fixed;
             width: 8px;
             height: 8px;
-            background: #ffe896; /* Золотистый цвет пыльцы */
+            background: #ffe896;
             border-radius: 50%;
-            pointer-events: none; /* Чтобы не мешала кликать */
+            pointer-events: none;
             z-index: 9999;
             box-shadow: 0 0 10px #ffe896, 0 0 20px #d4af37;
             animation: fadeOutTrail 0.8s linear forwards;
@@ -48,12 +48,12 @@
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0); }
         }
-        /* ------------------------------------------ */
 
+        /* --- Базовые элементы --- */
         .container { 
             max-width: 1000px; 
             margin: 0 auto; 
-            position: relative; /* Чтобы контент был поверх звезд */
+            position: relative; 
             z-index: 1;
         }
 
@@ -83,21 +83,30 @@
             text-shadow: 0px 2px 4px rgba(0,0,0,0.5);
         }
 
-        .cards-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; 
+        .loading { 
+            text-align: center; 
+            color: #d1c4e9; 
+            font-size: 1.2em; 
+            margin-top: 50px; 
         }
 
+        /* --- Сетка карточек --- */
+        .cards-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 25px; 
+        }
+
+        /* --- Обновленный дизайн карточки --- */
         .card { 
             background: rgba(255, 255, 255, 0.08); 
             backdrop-filter: blur(12px); 
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.15); 
             border-radius: 15px; 
-            padding: 15px; 
+            padding: 20px; 
             display: flex; 
-            align-items: center; 
+            flex-direction: column; /* Элементы идут сверху вниз */
             box-shadow: 0 8px 32px rgba(0,0,0,0.3); 
             border-left: 6px solid #d4af37; 
             transition: transform 0.3s ease, box-shadow 0.3s ease; 
@@ -109,9 +118,17 @@
             background: rgba(255, 255, 255, 0.12);
         }
 
+        /* Шапка карточки (Аватар + Имя) */
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
         .avatar { 
-            width: 60px; 
-            height: 60px; 
+            width: 50px; 
+            height: 50px; 
             border-radius: 10px; 
             flex-shrink: 0; 
             margin-right: 15px; 
@@ -120,16 +137,45 @@
             justify-content: center; 
             color: #ffffff; 
             font-weight: bold; 
-            font-size: 1.4em; 
+            font-size: 1.2em; 
             text-shadow: 1px 1px 2px rgba(0,0,0,0.4); 
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .info { flex-grow: 1; }
         .name { font-weight: bold; font-size: 1.1em; margin: 0 0 5px 0; color: #ffffff;}
-        .tasks { font-size: 0.9em; color: #b3a0d1; margin: 0; }
-        .checkmarks { font-size: 1.2em; text-align: right; margin-left: 10px; flex-shrink: 0; letter-spacing: 2px; filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.4));}
-        .loading { text-align: center; color: #d1c4e9; font-size: 1.2em; margin-top: 50px; }
+        .tasks-text { font-size: 0.85em; color: #b3a0d1; margin: 0; }
+
+        /* --- Блок с квадратиками (слотами) --- */
+        .slots-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap; /* Если не влезет, перенесется на новую строку */
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .slot {
+            width: 26px;
+            height: 26px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.2); /* Темный пустой фон */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        /* Стиль для заполненного слота */
+        .slot.filled {
+            background: rgba(46, 204, 113, 0.2);
+            border-color: #2ecc71;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.3);
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.4));
+        }
+
     </style>
 </head>
 <body>
@@ -143,11 +189,15 @@
 
     <script>
         const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRN6lR23IvtyaNCPyuFnLdOo3yBqxK25GmB7R6cFeiyzfypkkMkifjVsw5-3wTp2fxLoKDIvTSMCXPP/pub?gid=0&single=true&output=csv';
+        // Количество уроков на курсе (14 спикеров = 14 заданий)
+        const TOTAL_LESSONS = 14;
 
         window.onload = function() {
-            createBackgroundStars(); // Запускаем генерацию звезд
+            createBackgroundStars();
 
-            fetch(GOOGLE_SHEET_URL)
+            const noCacheUrl = GOOGLE_SHEET_URL + '&_nocache=' + new Date().getTime();
+
+            fetch(noCacheUrl, { cache: 'no-store' })
                 .then(response => response.text())
                 .then(csvText => {
                     document.getElementById('loading').style.display = 'none'; 
@@ -159,14 +209,11 @@
                 });
         };
 
-        // --- НОВЫЕ ФУНКЦИИ: Звезды и шлейф мыши ---
         function createBackgroundStars() {
-            const numStars = 70; // Количество звезд
+            const numStars = 70;
             for (let i = 0; i < numStars; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                
-                // Рандомизируем размер, положение и скорость мерцания
                 const size = Math.random() * 3 + 1;
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
@@ -174,33 +221,21 @@
                 star.style.top = `${Math.random() * 100}vh`;
                 star.style.animationDuration = `${Math.random() * 4 + 2}s`;
                 star.style.animationDelay = `${Math.random() * 5}s`;
-                
                 document.body.appendChild(star);
             }
         }
 
         document.addEventListener('mousemove', function(e) {
-            // Создаем искру не на каждый пиксель, а с небольшой вероятностью для оптимизации
             if (Math.random() > 0.4) return; 
-
             const trail = document.createElement('div');
             trail.className = 'mouse-trail';
-            
-            // Смещаем пыльцу немного от центра курсора
             const offsetX = (Math.random() - 0.5) * 20;
             const offsetY = (Math.random() - 0.5) * 20;
-            
             trail.style.left = `${e.clientX + offsetX}px`;
             trail.style.top = `${e.clientY + offsetY}px`;
-            
             document.body.appendChild(trail);
-
-            // Очищаем DOM: удаляем элемент через 800мс, когда закончится CSS-анимация fadeOutTrail
-            setTimeout(() => {
-                trail.remove();
-            }, 800);
+            setTimeout(() => { trail.remove(); }, 800);
         });
-        // -----------------------------------------
 
         function processCSV(csvText) {
             const container = document.getElementById('cardsContainer');
@@ -209,12 +244,15 @@
             const lines = csvText.split(/\r?\n/);
             if (lines.length < 2) return; 
 
+            const delimiter = lines[0].includes(';') ? ';' : ',';
             let students = [];
 
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue; 
 
-                const parts = lines[i].split(',');
+                // Разделяем строку на ячейки. Внимание: если в ФИО или отметках будут запятые, 
+                // встроенный экспорт Google оборачивает их в кавычки, но для простых "принято" это работает идеально.
+                const parts = lines[i].split(delimiter);
                 
                 if (parts.length > 0) {
                     const name = parts[0].trim();
@@ -222,7 +260,7 @@
 
                     let tasksCount = 0;
                     for (let j = 1; j < parts.length; j++) {
-                        if (parts[j].trim() !== '') {
+                        if (parts[j] && parts[j].trim() !== '') {
                             tasksCount++;
                         }
                     }
@@ -255,22 +293,37 @@
         }
 
         function createCard(name, tasksCount, container) {
-            const checkmarksCount = tasksCount;
-            const checkmarksHtml = '✅'.repeat(checkmarksCount);
-            
+            // Ограничиваем количество выполненных заданий числом 14, чтобы верстка не сломалась
+            const validTasksCount = Math.min(tasksCount, TOTAL_LESSONS);
+
+            // Генерируем 14 квадратиков-слотов
+            let slotsHtml = '';
+            for (let i = 0; i < TOTAL_LESSONS; i++) {
+                if (i < validTasksCount) {
+                    slotsHtml += `<div class="slot filled">✅</div>`; // Заполненный
+                } else {
+                    slotsHtml += `<div class="slot"></div>`; // Пустой
+                }
+            }
+
             const initials = getInitials(name);
             const bgColor = getColor(name);
             const avatarHtml = `<div class="avatar" style="background-color: ${bgColor};">${initials}</div>`;
 
             const card = document.createElement('div');
             card.className = 'card';
+            
             card.innerHTML = `
-                ${avatarHtml}
-                <div class="info">
-                    <p class="name">${name}</p>
-                    <p class="tasks">${tasksCount} выполненных заданий</p>
+                <div class="card-header">
+                    ${avatarHtml}
+                    <div class="info">
+                        <p class="name">${name}</p>
+                        <p class="tasks-text">${validTasksCount} из ${TOTAL_LESSONS} заданий</p>
+                    </div>
                 </div>
-                <div class="checkmarks">${checkmarksHtml}</div>
+                <div class="slots-container">
+                    ${slotsHtml}
+                </div>
             `;
             container.appendChild(card);
         }
